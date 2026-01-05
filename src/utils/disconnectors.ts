@@ -17,7 +17,7 @@ const shutdown = async (signal: string): Promise<void> => {
     await Promise.allSettled(
       cleanupHandlers.map((handler) => handler())
     );
-    logger.info("Graceful shutdown complete");
+    logger.info("Shutdown complete!");
     process.exit(0);
   } catch (error) {
     logger.error("Error during shutdown:", error);

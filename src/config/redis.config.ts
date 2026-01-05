@@ -70,7 +70,7 @@ export const getRedisClient = (): RedisClientType => {
 export const disconnectRedis = async (): Promise<void> => {
   if (redisClient) {
     await redisClient.quit();
-    logger.info("Redis: Disconnected gracefully");
+    logger.info("Redis: Disconnected successfully");
   }
 };
 

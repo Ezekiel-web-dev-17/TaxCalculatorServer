@@ -5,6 +5,7 @@ import helmet from "helmet";
 import cors from "cors";
 import { morganStream } from "./utils/logger.js";
 import errorMiddleware from "./middleware/error.middleware.js";
+import { arcjetMiddleware } from "./middleware/arcject.middleware.js";
 
 const app = express();
 
@@ -19,12 +20,15 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 // HTTP request logging
 app.use(morgan("dev", { stream: morganStream }));
 
+// Rate Limiter
+app.use(arcjetMiddleware);
+
 // Routes
-app.get("/", (_req: Request, res: Response) => {
-  res.send("Hello, TypeScript server!");
+app.get("/api/v1/", (_req: Request, res: Response) => {
+  res.send("Hello, TaxCalServer!");
 });
 
-app.get("/api/health", (_req: Request, res: Response) => {
+app.get("/api/v1/health", (_req: Request, res: Response) => {
   res.json({
     status: "OK",
     timestamp: new Date().toLocaleString("en-US", {
@@ -39,7 +43,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
   });
 });
 
-// Error handling middleware (must be last)
+// Error handling middleware
 app.use(errorMiddleware);
 
 export default app;
