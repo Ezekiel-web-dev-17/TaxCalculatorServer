@@ -2,7 +2,6 @@ import type { ArcjetNodeRequest } from "@arcjet/node";
 import aj from "../config/arcjet.config.js";
 import type { NextFunction, Request, Response } from "express";
 import { isSpoofedBot } from "@arcjet/inspect";
-import logger from "../utils/logger.js";
 
 export const arcjetMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const decision = await aj.protect(req as ArcjetNodeRequest, { requested: 5 }); // Deduct 5 tokens from the bucket

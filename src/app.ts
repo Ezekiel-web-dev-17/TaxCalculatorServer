@@ -6,6 +6,7 @@ import cors from "cors";
 import { morganStream } from "./utils/logger.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 import { arcjetMiddleware } from "./middleware/arcject.middleware.js";
+import chatRoute from "./routes/chat.route.js";
 
 const app = express();
 
@@ -21,12 +22,15 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 app.use(morgan("dev", { stream: morganStream }));
 
 // Rate Limiter
-app.use(arcjetMiddleware);
+// app.use(arcjetMiddleware);
 
 // Routes
+app.use("/api/v1/gemini/", chatRoute);
+
 app.get("/api/v1/", (_req: Request, res: Response) => {
   res.send("Hello, TaxCalServer!");
 });
+
 
 app.get("/api/v1/health", (_req: Request, res: Response) => {
   res.json({
