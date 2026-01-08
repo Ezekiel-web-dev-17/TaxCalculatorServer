@@ -2,6 +2,7 @@
 import { GoogleGenAI, HarmBlockThreshold, HarmCategory, type Content } from "@google/genai";
 import { GEMINI_MODEL } from "../config/env.config.js";
 import type { NextFunction, Request, Response } from "express";
+import redisClient from "../config/redis.config.js";
 
 const SYSTEM_PROMPT = `
 You are an AI assistant specialized ONLY in Nigeria's 2026 tax reforms.
@@ -29,13 +30,24 @@ DISCLAIMER:
 "This information is for guidance only and not legal advice."
 `;
 
+interface ChatBody {
+  userID: string;
+  prompt: string;
+}
+
+interface TaxContext {
+  annualIncome?: number;
+  taxOwed?: number;
+  effectiveRate?: string;
+}
+
 export async function startChat(
-  req: Request,
+  req: Request<{}, {}, ChatBody>,
   res: Response,
   next: NextFunction
 ) {
   try {
-    const { taxContext, prompt } = req.body;
+    const { userID, prompt } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: "No prompt provided" });
@@ -43,6 +55,17 @@ export async function startChat(
 
     if (!GEMINI_MODEL) {
       throw new Error("No Gemini model configured");
+    }
+
+    let taxContext: TaxContext | null = null;
+
+    try {
+      const data = await redisClient.get(userID);
+      if (data) {
+        taxContext = JSON.parse(data);
+      }
+    } catch (error) {
+      throw new Error(`Error getting tax context for user: ${userID} Invalid User ID`);
     }
 
     const ai = new GoogleGenAI({});
@@ -58,11 +81,11 @@ export async function startChat(
      */
     const calculationContext = taxContext
       ? `
-USER TAX CONTEXT:
-- Annual income: ₦${taxContext.annualIncome}
-- Tax owed: ₦${taxContext.taxOwed}
-- Effective tax rate: ${taxContext.effectiveRate}
-`
+          USER TAX CONTEXT:
+          - Annual income: ₦${taxContext.annualIncome || "N/A"}
+          - Tax owed: ₦${taxContext.taxOwed || "N/A"}
+          - Effective tax rate: ${taxContext.effectiveRate || "N/A"}
+        `
       : "";
 
     const chatHistory: Content[] = [
