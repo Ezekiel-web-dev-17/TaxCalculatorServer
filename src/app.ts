@@ -8,12 +8,34 @@ import errorMiddleware from "./middleware/error.middleware.js";
 import { arcjetMiddleware } from "./middleware/arcject.middleware.js";
 import chatRoute from "./routes/chat.route.js";
 import { taxRouter } from "./routes/calculate.route.js";
+import { ORIGIN } from "./config/env.config.js";
 
 const app = express();
 
 // Security middleware
 app.use(helmet()); // Security headers
-app.use(cors()); // CORS protection
+
+// CORS configuration
+const allowedOrigins = ORIGIN 
+  ? ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:3000', 'http://localhost:4000'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400 // 24 hours
+}));
 
 // Body parsing with size limits
 app.use(express.json({ limit: "10kb" }));

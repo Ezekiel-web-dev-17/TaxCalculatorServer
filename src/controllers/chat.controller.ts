@@ -36,9 +36,12 @@ interface ChatBody {
 }
 
 interface TaxContext {
-  annualIncome?: number;
+  grossIncome?: number;
+  totalDeductions?: number;
+  taxableIncome?: number;
   taxOwed?: number;
-  effectiveRate?: string;
+  effectiveTaxRate?: number;
+  afterTaxIncome?: number;
 }
 
 export async function startChat(
@@ -75,17 +78,23 @@ export async function startChat(
      * Optional calculation context (from calculator)
      * Example:
      * {
-     *   annualIncome: 3500000,
+     *   grossIncome: 3500000,
+     *   totalDeductions: 350000,
+     *   taxableIncome: 3150000,
      *   taxOwed: 225000,
-     *   effectiveRate: "6.4%"
+     *   effectiveTaxRate: 6.43,
+     *   afterTaxIncome: 3275000
      * }
      */
     const calculationContext = taxContext
       ? `
           USER TAX CONTEXT:
-          - Annual income: ₦${taxContext.annualIncome || "N/A"}
-          - Tax owed: ₦${taxContext.taxOwed || "N/A"}
-          - Effective tax rate: ${taxContext.effectiveRate || "N/A"}
+          - Gross annual income: ₦${taxContext.grossIncome?.toLocaleString() || "N/A"}
+          - Total deductions: ₦${taxContext.totalDeductions?.toLocaleString() || "N/A"}
+          - Taxable income: ₦${taxContext.taxableIncome?.toLocaleString() || "N/A"}
+          - Tax owed: ₦${taxContext.taxOwed?.toLocaleString() || "N/A"}
+          - Effective tax rate: ${taxContext.effectiveTaxRate || "N/A"}%
+          - After-tax income: ₦${taxContext.afterTaxIncome?.toLocaleString() || "N/A"}
         `
       : "";
 
