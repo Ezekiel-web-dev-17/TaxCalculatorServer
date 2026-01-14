@@ -3,6 +3,6 @@ import { startChat } from "../controllers/chat.controller.js";
 
 const chatRoute =  Router();
 
-chatRoute.post('/chat', startChat);
+chatRoute.post('/', startChat);
 
 export default chatRoute;
