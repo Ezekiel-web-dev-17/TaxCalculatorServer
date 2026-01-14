@@ -8,7 +8,7 @@ import { registerCleanup } from "../utils/disconnectors.js";
 let redisClient: RedisClientType;
 
 // Create and configure Redis client
-export const createRedisClient = (): RedisClientType => {
+const createRedisClient = (): RedisClientType => {
   const client = createClient({
     url: REDIS_URL || "redis://localhost:6379",
     socket: {
@@ -67,7 +67,7 @@ export const getRedisClient = (): RedisClientType => {
 };
 
 // Disconnect from Redis
-export const disconnectRedis = async (): Promise<void> => {
+const disconnectRedis = async (): Promise<void> => {
   if (redisClient) {
     await redisClient.quit();
     logger.info("Redis: Disconnected successfully");
@@ -75,5 +75,3 @@ export const disconnectRedis = async (): Promise<void> => {
 };
 
 registerCleanup(disconnectRedis);
-
-export default redisClient!;

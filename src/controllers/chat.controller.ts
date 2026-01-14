@@ -2,7 +2,7 @@
 import { GoogleGenAI, HarmBlockThreshold, HarmCategory, type Content } from "@google/genai";
 import { GEMINI_MODEL } from "../config/env.config.js";
 import type { NextFunction, Request, Response } from "express";
-import redisClient from "../config/redis.config.js";
+import { getRedisClient } from "../config/redis.config.js";
 
 const SYSTEM_PROMPT = `
 You are an AI assistant specialized ONLY in Nigeria's 2026 tax reforms.
@@ -60,6 +60,7 @@ export async function startChat(
     let taxContext: TaxContext | null = null;
 
     try {
+      const redisClient = getRedisClient();
       const data = await redisClient.get(userID);
       if (data) {
         taxContext = JSON.parse(data);
