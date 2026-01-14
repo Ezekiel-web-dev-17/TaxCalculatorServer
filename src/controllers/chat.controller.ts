@@ -3,6 +3,7 @@ import { GoogleGenAI, HarmBlockThreshold, HarmCategory, type Content } from "@go
 import { GEMINI_MODEL } from "../config/env.config.js";
 import type { NextFunction, Request, Response } from "express";
 import { getRedisClient } from "../config/redis.config.js";
+import logger from "../utils/logger.js";
 
 const SYSTEM_PROMPT = `
 You are an AI assistant specialized ONLY in Nigeria's 2026 tax reforms.
@@ -53,8 +54,19 @@ export async function startChat(
     const { userID, prompt } = req.body;
 
     if (!prompt) {
+      logger.error("No prompt provided");
       return res.status(400).json({ error: "No prompt provided" });
     }
+
+    if (prompt.length > 200) {
+      logger.error("Prompt length exceeded.");
+      return res.status(400).json({error: "Prompt length exceeded."})
+    }
+
+    if (!userID || typeof userID !== 'string' || userID.trim() === '') {
+      logger.error("Invalid user ID.");
+      return res.status(400).json({ success: false, message: "Valid user ID is required!" });
+  }
 
     if (!GEMINI_MODEL) {
       throw new Error("No Gemini model configured");
@@ -66,7 +78,7 @@ export async function startChat(
       const redisClient = getRedisClient();
       const data = await redisClient.get(userID);
       if (data) {
-        taxContext = JSON.parse(data);
+        taxContext = await JSON.parse(data);
       }
     } catch (error) {
       throw new Error(`Error getting tax context for user: ${userID} Invalid User ID`);

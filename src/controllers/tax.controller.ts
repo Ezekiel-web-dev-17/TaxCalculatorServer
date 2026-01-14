@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { getRedisClient } from "../config/redis.config.js";
 import { randomBytes } from "crypto";
+import logger from "../utils/logger.js";
 
 interface CalculateBody {
     monthlyGrossIncome: number;
@@ -81,6 +82,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
 
         // Validate required field
         if (!monthlyGrossIncome || typeof monthlyGrossIncome !== 'number') {
+            logger.error("Monthly gross income is required and must be a valid number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Monthly gross income is required and must be a valid number!" 
@@ -89,6 +91,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
 
         // Validate all numeric inputs are non-negative
         if (!isValidNonNegativeNumber(monthlyGrossIncome)) {
+            logger.error("Monthly gross income must be a positive number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Monthly gross income must be a positive number!" 
@@ -96,6 +99,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
         }
 
         if (!isValidNonNegativeNumber(additionalMonthlyIncome)) {
+            logger.error("Additional monthly income must be a non-negative number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Additional monthly income must be a non-negative number!" 
@@ -103,6 +107,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
         }
 
         if (!isValidNonNegativeNumber(annualPensionContributions)) {
+            logger.error("Annual pension contributions must be a non-negative number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Annual pension contributions must be a non-negative number!" 
@@ -110,6 +115,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
         }
 
         if (!isValidNonNegativeNumber(annualNHFContributions)) {
+            logger.error("Annual NHF contributions must be a non-negative number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Annual NHF contributions must be a non-negative number!" 
@@ -117,6 +123,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
         }
 
         if (!isValidNonNegativeNumber(annualRentPaid)) {
+            logger.error("Annual rent paid must be a non-negative number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Annual rent paid must be a non-negative number!" 
@@ -124,6 +131,7 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
         }
 
         if (!isValidNonNegativeNumber(lifeInsurancePremiums)) {
+            logger.error("Life insurance premiums must be a non-negative number!");
             return res.status(400).json({ 
                 success: false, 
                 message: "Life insurance premiums must be a non-negative number!" 
@@ -210,6 +218,7 @@ export const getCalculation = async (req: Request<{userID: string}, {}, {}>, res
         const { userID } = req.params;
         
         if (!userID || typeof userID !== 'string' || userID.trim() === '') {
+            logger.error("Invalid user ID.");
             return res.status(400).json({ success: false, message: "Valid user ID is required!" });
         }
 
@@ -217,10 +226,11 @@ export const getCalculation = async (req: Request<{userID: string}, {}, {}>, res
         const fromRedis = await redisClient.get(userID);
 
         if (!fromRedis) {
+            logger.error("Calculation not found or expired!");
             return res.status(404).json({ success: false, message: "Calculation not found or expired!" });
         }
 
-        const savedCalculation: taxResponse = JSON.parse(fromRedis);
+        const savedCalculation: taxResponse = await JSON.parse(fromRedis);
         res.json({ success: true, message: "Calculation retrieved successfully!", userID, calculation: savedCalculation });
     } catch (error) {
         next(error);

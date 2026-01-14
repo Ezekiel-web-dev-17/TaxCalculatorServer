@@ -8,12 +8,21 @@ import errorMiddleware from "./middleware/error.middleware.js";
 import { arcjetMiddleware } from "./middleware/arcject.middleware.js";
 import chatRoute from "./routes/chat.route.js";
 import { taxRouter } from "./routes/calculate.route.js";
-import { ORIGIN } from "./config/env.config.js";
+import { ORIGIN, NODE_ENV } from "./config/env.config.js";
 
 const app = express();
-
-// Security middleware
-app.use(helmet()); // Security headers
+app.use(helmet({
+  contentSecurityPolicy: false,  // Not needed for API-only server
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  hidePoweredBy: true,
+  noSniff: true,
+  hsts: NODE_ENV === 'production' ? {
+    maxAge: 31536000,
+    includeSubDomains: true,
+  } : false,
+  frameguard: { action: 'deny' },
+  referrerPolicy: { policy: "no-referrer" },
+})); // Security headers
 
 // CORS configuration
 const allowedOrigins = ORIGIN 
