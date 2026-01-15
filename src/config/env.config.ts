@@ -1,48 +1,71 @@
-import { config } from "dotenv";
-import { envSchema } from "./schema/env.schema.js";
-import dotenv from "dotenv";
 import fs from "fs";
+import dotenv from "dotenv";
+import { envSchema } from "./schema/env.schema.js";
 
-config({ path: `.env.${process.env.NODE_ENV || "development"}.local` })
+/**
+ * Resolve environment
+ */
+const NODE_ENV = process.env.NODE_ENV ?? "development";
+const isTest = NODE_ENV === "test";
+const isProduction = NODE_ENV === "production";
 
-// Phase 1: load base env (content is only NODE_ENV)
-dotenv.config({ path: ".env" });
-
-// Phase 2: load env-specific file
-const env = process.env.NODE_ENV ?? "development";
-
-dotenv.config({
-  path: `.env.${env}.local`,
-});
-
-const parsed = envSchema.safeParse({
-  ...process.env,
-});
-
-// Skip strict validation in test mode
-if (!parsed.success && process.env.NODE_ENV !== 'test') {
-  console.error("Invalid environment variables: ", parsed.error.format());
-  process.exit(1);
-}
-
-// Skip file existence check in test mode
-if (process.env.NODE_ENV !== 'test' && !fs.existsSync(`.env.${parsed.data?.NODE_ENV || 'development'}.local`)) {
-  throw new Error(`Missing env file: ${`.env.${parsed.data?.NODE_ENV || 'development'}.local`}`);
-}
-
-
-if (
-  parsed.data &&
-  parsed.data.NODE_ENV === "production" &&
-  parsed.data.MONGO_URL
-) {
-  throw new Error("Production cannot use localhost database");
+/**
+ * Phase 1: Load base .env (optional)
+ * Contains minimal values like NODE_ENV
+ */
+if (fs.existsSync(".env")) {
+    dotenv.config({ path: ".env" });
 }
 
 /**
- * Export typed, immutable env
- * In test mode, use process.env directly if parsing failed
+ * Phase 2: Load environment-specific overrides (local dev only)
+ * Example: .env.development.local
  */
-const envData = parsed.success ? parsed.data : (process.env as any);
-export const { NODE_ENV, PORT, MONGO_URL, MONGO_USER, MONGO_PASS, JWT_SECRET, REDIS_URL, ARCJET_KEY, ARCJET_ENV, GEMINI_API_KEY, GEMINI_MODEL, ORIGIN } =
-  Object.freeze(envData);
+const envFile = `.env.${NODE_ENV}.local`;
+
+if (!isProduction && !isTest && fs.existsSync(envFile)) {
+    dotenv.config({ path: envFile });
+}
+
+/**
+ * Phase 3: Validate environment variables
+ */
+const parsed = envSchema.safeParse(process.env);
+
+if (!parsed.success && !isTest) {
+    console.error("❌ Invalid environment variables:");
+    console.error(parsed.error.format());
+    process.exit(1);
+}
+
+/**
+ * Phase 4: Production safety checks
+ */
+if (
+    parsed.success &&
+    isProduction &&
+    parsed.data.MONGO_URL?.includes("localhost")
+) {
+    throw new Error("❌ Production cannot use a localhost MongoDB URL");
+}
+
+/**
+ * Phase 5: Export immutable, typed env
+ * In test mode, fallback to process.env
+ */
+const envData = parsed.success ? parsed.data : process.env;
+
+export const {
+    NODE_ENV: ENV,
+    PORT,
+    MONGO_URL,
+    MONGO_USER,
+    MONGO_PASS,
+    JWT_SECRET,
+    REDIS_URL,
+    ARCJET_KEY,
+    ARCJET_ENV,
+    GEMINI_API_KEY,
+    GEMINI_MODEL,
+    ORIGIN,
+} = Object.freeze(envData);
