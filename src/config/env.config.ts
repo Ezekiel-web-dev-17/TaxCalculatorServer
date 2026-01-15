@@ -56,7 +56,7 @@ if (
 const envData = parsed.success ? parsed.data : process.env;
 
 export const {
-    NODE_ENV: ENV,
+    NODE_ENV,
     PORT,
     MONGO_URL,
     MONGO_USER,
