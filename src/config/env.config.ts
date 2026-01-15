@@ -5,7 +5,7 @@ import { envSchema } from "./schema/env.schema.js";
 /**
  * Resolve environment
  */
-const NODE_ENV = process.env.NODE_ENV ?? "development";
+export const NODE_ENV = process.env.NODE_ENV ?? "development";
 const isTest = NODE_ENV === "test";
 const isProduction = NODE_ENV === "production";
 
@@ -56,7 +56,6 @@ if (
 const envData = parsed.success ? parsed.data : process.env;
 
 export const {
-    NODE_ENV,
     PORT,
     MONGO_URL,
     MONGO_USER,
