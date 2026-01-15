@@ -12,7 +12,7 @@ jest.mock('../../utils/logger.js', () => ({
 }));
 
 jest.mock('../../middleware/arcject.middleware.js', () => ({
-  arcjetMiddleware: jest.fn((req, res, next) => next()),
+  arcjetMiddleware: jest.fn((req, res, next: any) => next()),
 }));
 
 jest.mock('../../config/env.config.js', () => ({

@@ -16,7 +16,7 @@ jest.mock('../../utils/logger.js', () => ({
 }));
 
 jest.mock('../../middleware/arcject.middleware.js', () => ({
-  arcjetMiddleware: jest.fn((req, res, next) => next()),
+  arcjetMiddleware: jest.fn((req, res, next: any) => next()),
 }));
 
 jest.mock('../../config/env.config.js', () => ({
@@ -38,7 +38,7 @@ jest.mock('@google/genai', () => ({
 describe('Chat Routes Integration Tests', () => {
   beforeEach(() => {
     resetAllMocks();
-    mockChat.sendMessage.mockResolvedValue({
+    (mockChat.sendMessage as any).mockResolvedValue({
       text: 'This is a mock AI response about Nigerian tax reforms.',
     });
   });
@@ -188,7 +188,7 @@ describe('Chat Routes Integration Tests', () => {
 
     it('should handle AI errors gracefully', async () => {
       mockRedisClient.get.mockResolvedValue(null);
-      mockChat.sendMessage.mockRejectedValue(new Error('API error'));
+      (mockChat.sendMessage as any).mockRejectedValue(new Error('API error'));
 
       const response = await request(app)
         .post('/api/v1/chat')

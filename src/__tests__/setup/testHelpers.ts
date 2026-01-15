@@ -6,9 +6,9 @@ import type { Response } from 'express';
  */
 export const createMockResponse = (): Partial<Response> => {
   const res: Partial<Response> = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn().mockReturnThis(),
-    send: jest.fn().mockReturnThis(),
+    status: jest.fn().mockReturnThis() as any,
+    json: jest.fn().mockReturnThis() as any,
+    send: jest.fn().mockReturnThis() as any,
     statusCode: 200,
   };
   return res;

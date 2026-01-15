@@ -17,7 +17,7 @@ describe('Error Middleware', () => {
   beforeEach(() => {
     req = createMockRequest();
     res = createMockResponse();
-    next = createMockNext();
+    next = createMockNext() as any;
     mockLogger.error.mockClear();
     process.env.NODE_ENV = 'test';
   });
@@ -128,7 +128,7 @@ describe('Error Middleware', () => {
 
     errorMiddleware(error as any, req as Request, res as Response, next);
 
-    const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+    const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
     expect(callArgs.stack).toBeDefined();
     expect(callArgs.stack).toContain('Error: Development error');
   });
@@ -139,7 +139,7 @@ describe('Error Middleware', () => {
 
     errorMiddleware(error as any, req as Request, res as Response, next);
 
-    const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+    const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
     expect(callArgs.stack).toBeUndefined();
   });
 
@@ -174,7 +174,7 @@ describe('Error Middleware', () => {
 
     errorMiddleware(error as any, req as Request, res as Response, next);
 
-    const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+    const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
     expect(callArgs.success).toBe(false);
   });
 

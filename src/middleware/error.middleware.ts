@@ -12,7 +12,7 @@ const errorMiddleware = (
   err: AppError,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ) => {
   // Log error with stack trace
   logger.error(err.message, { stack: err.stack, code: err.code });
@@ -21,6 +21,10 @@ const errorMiddleware = (
   let message = err.message || "Internal server error";
 
   // Handle specific error types
+  if (res.headersSent) {
+    return next(err);
+  }
+
   if (err.name === "CastError") {
     statusCode = 404;
     message = "Resource not found";

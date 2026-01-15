@@ -1,4 +1,10 @@
 import { jest } from '@jest/globals';
+import type { RedisClientType } from "redis";
+
+// export const mockRedisClient = {
+//   get: jest.fn<Promise<string | null>, [string]>(),
+//   setEx: jest.fn<Promise<"OK">, [string, number, string]>(),
+// }
 
 export const mockRedisClient = {
   get: jest.fn(),
@@ -9,11 +15,11 @@ export const mockRedisClient = {
   on: jest.fn(),
   isOpen: true,
   isReady: true,
-};
+} as unknown as jest.Mocked<RedisClientType>;;
 
 // Mock Google Gemini AI
 export const mockChat = {
-  sendMessage: jest.fn().mockResolvedValue({
+  sendMessage: (jest.fn() as any).mockResolvedValue({
     text: 'This is a mock AI response about Nigerian tax reforms.',
   }),
 };

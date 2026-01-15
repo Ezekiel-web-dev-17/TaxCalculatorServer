@@ -27,7 +27,7 @@ describe('Tax Controller', () => {
     resetAllMocks();
     req = createMockRequest();
     res = createMockResponse();
-    next = createMockNext();
+    next = createMockNext() as any;
   });
 
   describe('calculate', () => {
@@ -148,7 +148,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       expect(callArgs.calculation.taxOwed).toBe(0); // Should be tax-free
     });
 
@@ -158,7 +158,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       // First 800k = 0, next 2,200k @ 15% = 330,000, next 600k @ 18% = 108,000
       // Total should be around 438,000
       expect(callArgs.calculation.taxOwed).toBeGreaterThan(400000);
@@ -171,7 +171,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       expect(callArgs.calculation.taxOwed).toBeGreaterThan(10000000);
     });
 
@@ -184,7 +184,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       // Pension deduction should be capped at 10% of gross income (600,000)
       expect(callArgs.calculation.totalDeductions).toBeLessThanOrEqual(600000);
     });
@@ -198,7 +198,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       // NHF should be capped at 5,000
       expect(callArgs.calculation.totalDeductions).toBe(5000);
     });
@@ -212,7 +212,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       // Rent deduction should be capped at 500,000
       expect(callArgs.calculation.totalDeductions).toBe(500000);
     });
@@ -226,7 +226,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       // Rent deduction should be 20% of 400,000 = 80,000
       expect(callArgs.calculation.totalDeductions).toBe(80000);
     });
@@ -252,13 +252,13 @@ describe('Tax Controller', () => {
       mockRedisClient.setEx.mockResolvedValue('OK');
 
       await calculate(req as any, res as Response, next);
-      const firstCall = (res.json as jest.Mock).mock.calls[0][0];
+      const firstCall = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       const firstUserID = firstCall.userID;
 
       // Reset and call again
       (res.json as jest.Mock).mockClear();
       await calculate(req as any, res as Response, next);
-      const secondCall = (res.json as jest.Mock).mock.calls[0][0];
+      const secondCall = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       const secondUserID = secondCall.userID;
 
       expect(firstUserID).not.toBe(secondUserID);
@@ -281,7 +281,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       const { grossIncome, taxOwed, effectiveTaxRate } = callArgs.calculation;
 
       const expectedRate = Math.round((taxOwed / grossIncome) * 10000) / 100;
@@ -294,7 +294,7 @@ describe('Tax Controller', () => {
 
       await calculate(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       const { grossIncome, taxOwed, afterTaxIncome } = callArgs.calculation;
 
       expect(afterTaxIncome).toBe(Math.round((grossIncome - taxOwed) * 100) / 100);
@@ -382,7 +382,7 @@ describe('Tax Controller', () => {
 
       await getCalculation(req as any, res as Response, next);
 
-      const callArgs = (res.json as jest.Mock).mock.calls[0][0];
+      const callArgs = (res.json as jest.Mock).mock.calls[0]?.[0] as any;
       expect(callArgs.calculation).toEqual(savedCalculation);
     });
   });

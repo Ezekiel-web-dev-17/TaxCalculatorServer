@@ -38,12 +38,12 @@ describe('Chat Controller', () => {
 
   beforeEach(() => {
     resetAllMocks();
-    mockChat.sendMessage.mockResolvedValue({
+    (mockChat.sendMessage as any).mockResolvedValue({
       text: 'This is a mock AI response about Nigerian tax reforms.',
     });
     req = createMockRequest();
     res = createMockResponse();
-    next = createMockNext();
+    next = createMockNext() as any;
   });
 
   describe('startChat', () => {
@@ -237,7 +237,7 @@ describe('Chat Controller', () => {
         prompt: 'What are the tax brackets?',
       };
       mockRedisClient.get.mockResolvedValue(null);
-      mockChat.sendMessage.mockRejectedValue(new Error('Gemini API error'));
+      (mockChat.sendMessage as any).mockRejectedValue(new Error('Gemini API error'));
 
       await startChat(req as any, res as Response, next);
 
@@ -265,7 +265,7 @@ describe('Chat Controller', () => {
 
       await startChat(req as any, res as Response, next);
 
-      const createCallArgs = mockGeminiAI.chats.create.mock.calls[0][0];
+      const createCallArgs = (mockGeminiAI.chats.create as jest.Mock).mock.calls[0]?.[0] as any;
       const systemMessage = createCallArgs.history[0];
 
       expect(systemMessage.role).toBe('user');
@@ -283,7 +283,7 @@ describe('Chat Controller', () => {
 
       await startChat(req as any, res as Response, next);
 
-      const createCallArgs = mockGeminiAI.chats.create.mock.calls[0][0];
+      const createCallArgs = (mockGeminiAI.chats.create as jest.Mock).mock.calls[0]?.[0] as any;
       const modelConfirmation = createCallArgs.history[1];
 
       expect(modelConfirmation.role).toBe('model');
@@ -299,7 +299,7 @@ describe('Chat Controller', () => {
 
       await startChat(req as any, res as Response, next);
 
-      const createCallArgs = mockGeminiAI.chats.create.mock.calls[0][0];
+      const createCallArgs = (mockGeminiAI.chats.create as jest.Mock).mock.calls[0]?.[0] as any;
 
       expect(createCallArgs.config.safetySettings).toEqual([
         {
@@ -341,7 +341,7 @@ describe('Chat Controller', () => {
 
       await startChat(req as any, res as Response, next);
 
-      const createCallArgs = mockGeminiAI.chats.create.mock.calls[0][0];
+      const createCallArgs = (mockGeminiAI.chats.create as jest.Mock).mock.calls[0]?.[0] as any;
       const systemPrompt = createCallArgs.history[0].parts[0].text;
 
       expect(systemPrompt).toContain('₦');
