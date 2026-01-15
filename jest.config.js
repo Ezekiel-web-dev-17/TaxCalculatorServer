@@ -15,4 +15,5 @@ export default {
   },
   testMatch: ["**/__tests__/**/*.test.ts", "**/*.spec.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setup/jest.setup.ts"],
 };

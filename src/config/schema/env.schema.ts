@@ -5,19 +5,19 @@ export const envSchema = z.object({
 
   PORT: z.coerce.number().int().positive().default(4000),
 
-  MONGO_URL: z.string(),
-  MONGO_USER: z.string(),
-  MONGO_PASS: z.string(),
+  MONGO_URL: z.string().startsWith("mongodb+srv://").includes("mongodb.net/?appName=Cluster"),
+  MONGO_USER: z.string().endsWith("_db_user"),
+  MONGO_PASS: z.string().min(16),
 
-  JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 chars"),
+  JWT_SECRET: z.string(),
 
-  REDIS_URL: z.string().min(1, "REDIS_URL must be at least 1 char"),
+  REDIS_URL: z.string(),
 
-  ARCJET_KEY: z.string().min(1, "ARCJET_KEY must be at least 1 char"),
+  ARCJET_KEY: z.string().min(6, "ARCJET_KEY must be at least 6 char").startsWith("ajkey_"),
   ARCJET_ENV: z.enum(["development", "test", "production"]),
 
-  GEMINI_API_KEY: z.string().min(1, "GEMINI_API_KEY must be at least 1 char"),
-  GEMINI_MODEL: z.string().min(6, "GEMINI_MODEL must be at least 6 chars"),
+  GEMINI_API_KEY: z.string(),
+  GEMINI_MODEL: z.string().min(6, "GEMINI_MODEL must be at least 6 chars").startsWith("gemini"),
 
-  ORIGIN: z.string().min(1, "ORIGIN must be at least 1 char").optional(),
+  ORIGIN: z.string().min(7, "ORIGIN must be at least 7 char").startsWith("http"),
 });

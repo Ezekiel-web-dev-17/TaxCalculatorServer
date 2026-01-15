@@ -201,13 +201,13 @@ export const calculate = async (req: Request<{}, {}, CalculateBody>, res: Respon
             // Still return the calculation even if Redis fails
             return res.json({ 
                 success: true, 
-                message: "Calculation successful! (Note: Unable to save for later retrieval)", 
+                message: "Tax calculation successful! (Note: Unable to save for later retrieval)", 
                 userID: null, 
-                calculation: result 
+                taxCalculation: result 
             });
         }
 
-        res.json({ success: true, message: "Calculation successful!", userID, calculation: result });
+        res.json({ success: true, message: "Tax calculation successful!", userID, taxCalculation: result });
     } catch (error) {
         next(error);
     }
@@ -226,12 +226,12 @@ export const getCalculation = async (req: Request<{userID: string}, {}, {}>, res
         const fromRedis = await redisClient.get(userID);
 
         if (!fromRedis) {
-            logger.error("Calculation not found or expired!");
-            return res.status(404).json({ success: false, message: "Calculation not found or expired!" });
+            logger.error("Tax calculation not found or expired!");
+            return res.status(404).json({ success: false, message: "Tax calculation not found or expired!" });
         }
 
         const savedCalculation: taxResponse = await JSON.parse(fromRedis);
-        res.json({ success: true, message: "Calculation retrieved successfully!", userID, calculation: savedCalculation });
+        res.json({ success: true, message: "Tax calculation retrieved successfully!", userID, taxCalculation: savedCalculation });
     } catch (error) {
         next(error);
     }

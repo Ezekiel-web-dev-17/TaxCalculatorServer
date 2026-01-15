@@ -12,7 +12,7 @@ const startServer = async () => {
 
     // Then start server
     app.listen(PORT, () => {
-      logger.info(`Server running on http://localhost:${PORT}, on: ${NODE_ENV}`);
+      logger.info(`Server running on http://localhost:${PORT}, Environment: ${NODE_ENV.toUpperCase()}`);
     });
   } catch (error) {
     logger.error("Failed to start server:", error);

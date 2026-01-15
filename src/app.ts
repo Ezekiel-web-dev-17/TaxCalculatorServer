@@ -25,15 +25,15 @@ app.use(helmet({
 })); // Security headers
 
 // CORS configuration
-const allowedOrigins = ORIGIN 
-  ? ORIGIN.split(',').map(origin => origin.trim())
+const allowedOrigins = ORIGIN
+  ? ORIGIN.split(',').map((origin: string) => origin.trim())
   : ['http://localhost:3000', 'http://localhost:4000'];
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -68,6 +68,7 @@ app.use("/api/v1/tax", taxRouter);
 app.get("/api/v1/health", (_req: Request, res: Response) => {
   res.json({
     status: "OK",
+    success: true,
     timestamp: new Date().toLocaleString("en-US", {
       timeZone: "Africa/Lagos",
       year: "numeric",
