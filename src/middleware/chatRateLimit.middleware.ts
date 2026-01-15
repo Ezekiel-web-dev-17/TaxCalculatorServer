@@ -18,7 +18,7 @@ export const chatRateLimiter = rateLimit({
     res.status(429).json({
       success: false,
       error: 'Too many chat requests from this IP. Please try again after 5 minutes.',
-      retryAfter: Math.ceil(req.rateLimit?.resetTime! / 1000), // Retry after timestamp
+      retryAfter: Math.ceil(req.rateLimit?.resetTime?.getDate()! / 1000), // Retry after timestamp
     });
   },
 });
