@@ -13,15 +13,15 @@ const isProduction = NODE_ENV === "production";
  * Phase 1: Load base .env (optional)
  * Contains minimal values like NODE_ENV
  */
-if (fs.existsSync(".env")) {
-    dotenv.config({ path: ".env" });
-}
+// if (fs.existsSync(".env")) {
+dotenv.config({ path: ".env" });
+// }
 
 /**
  * Phase 2: Load environment-specific overrides (local dev only)
  * Example: .env.development.local
  */
-const envFile = `.env.${NODE_ENV}.local`;
+const envFile = `.env`;
 
 if (!isProduction && !isTest && fs.existsSync(envFile)) {
     dotenv.config({ path: envFile });
