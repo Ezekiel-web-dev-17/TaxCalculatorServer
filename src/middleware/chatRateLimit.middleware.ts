@@ -1,3 +1,4 @@
+import type { Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
 
 /**
@@ -14,7 +15,7 @@ export const chatRateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   statusCode: 429, // HTTP status code for rate limit exceeded
-  handler: (req, res) => {
+  handler: (req: Request, res: Response) => {
     res.status(429).json({
       success: false,
       error: 'Too many chat requests from this IP. Please try again after 5 minutes.',
