@@ -25,17 +25,13 @@ app.use(helmet({
 })); // Security headers
 
 // CORS configuration
-const allowedOrigins = ORIGIN
-  ? ORIGIN.split(',').map((origin: string) => origin.trim())
-  : ['http://localhost:3000', 'http://localhost:4000'];
-
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      callback(null, origin);
+    if (ORIGIN) {
+      callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
