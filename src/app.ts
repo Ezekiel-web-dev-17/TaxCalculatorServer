@@ -2,7 +2,7 @@ import express from "express";
 import type { Request, Response } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
-import cors from "cors";
+// import cors from "cors";
 import { morganStream } from "./utils/logger.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 import { arcjetMiddleware } from "./middleware/arcject.middleware.js";
@@ -25,22 +25,22 @@ app.use(helmet({
 })); // Security headers
 
 // CORS configuration
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     // Allow requests with no origin (like mobile apps, curl, Postman)
+//     if (!origin) return callback(null, true);
 
-    if (ORIGIN) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow cookies
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  maxAge: 86400 // 24 hours
-}));
+//     if (ORIGIN) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true, // Allow cookies
+//   methods: ['GET', 'POST'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   maxAge: 86400 // 24 hours
+// }));
 
 // Body parsing with size limits
 app.use(express.json({ limit: "10kb" }));
