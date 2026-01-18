@@ -31,9 +31,9 @@ const allowedOrigins = ORIGIN
 
 console.log("First allowedOrigin: ", allowedOrigins[0]);
 app.use(cors({
-  origin: allowedOrigins[0]
+  origin: allowedOrigins[0],
   credentials: true, // Allow cookies
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   maxAge: 86400 // 24 hours
 }));
