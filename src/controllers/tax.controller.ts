@@ -12,10 +12,6 @@ interface CalculateBody {
     lifeInsurancePremiums?: number;
 }
 
-interface GetCalculateBody {
-    userID: string;
-}
-
 interface taxResponse {
     grossIncome: number;
     totalDeductions: number;

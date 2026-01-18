@@ -19,5 +19,5 @@ export const envSchema = z.object({
   GEMINI_API_KEY: z.string(),
   GEMINI_MODEL: z.string().min(6, "GEMINI_MODEL must be at least 6 chars").startsWith("gemini"),
 
-  ORIGIN: z.string().min(7, "ORIGIN must be at least 7 char").startsWith("http"),
+  ORIGIN: z.string().min(7, "ORIGIN must be at least 7 char").startsWith("https"),
 });
