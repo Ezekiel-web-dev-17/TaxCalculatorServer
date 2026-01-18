@@ -2,7 +2,7 @@ import express from "express";
 import type { Request, Response } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
-//import cors from "cors";
+import cors from "cors";
 import { morganStream } from "./utils/logger.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 import { arcjetMiddleware } from "./middleware/arcject.middleware.js";
@@ -25,12 +25,12 @@ app.use(helmet({
 })); // Security headers
 
 // CORS configuration
-/*
 const allowedOrigins = ORIGIN
   ? ORIGIN.split(',').map((origin: string) => origin.trim())
   : ['http://localhost:3000', 'http://localhost:4000'];
 
 console.log("First allowedOrigin: ", allowedOrigins[0]);
+
 app.use(cors({
   origin: allowedOrigins[0],
   credentials: true, // Allow cookies
@@ -38,8 +38,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   maxAge: 86400 // 24 hours
 }));
-
-*/
 
 // Body parsing with size limits
 app.use(express.json({ limit: "10kb" }));
