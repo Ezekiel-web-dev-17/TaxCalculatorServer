@@ -29,6 +29,7 @@ const allowedOrigins = ORIGIN
   ? ORIGIN.split(',').map((origin: string) => origin.trim())
   : ['http://localhost:3000', 'http://localhost:4000'];
 
+console.log(allowedOrigins);
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, Postman)
